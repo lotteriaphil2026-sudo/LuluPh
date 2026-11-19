@@ -6,12 +6,14 @@ use App\Support\InvestmentPackages;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use JsonException;
 
 class RestoreBackupCommand extends Command
 {
     protected $signature = 'backup:restore
-        {file : Path to a protected JSON backup file}
+        {file : Path to a protected JSON backup file, or object key when --disk is set}
+        {--disk= : Read the backup from this configured Laravel filesystem disk}
         {--force : Skip the confirmation prompt; required in production}
         {--dry-run : Validate and report without changing the database}
         {--discard-unexported-data : Delete user-related records not included in the backup}';
@@ -45,17 +47,30 @@ class RestoreBackupCommand extends Command
     public function handle(): int
     {
         $path = (string) $this->argument('file');
-        if (! is_file($path) || ! is_readable($path)) {
-            $this->error('The backup file does not exist or cannot be read.');
+        $disk = $this->option('disk');
 
-            return self::FAILURE;
-        }
+        if ($disk !== null) {
+            $storage = Storage::disk((string) $disk);
+            if (! $storage->exists($path)) {
+                $this->error("The backup object does not exist on the [{$disk}] disk.");
 
-        $contents = file_get_contents($path);
-        if ($contents === false) {
-            $this->error('The backup file could not be read.');
+                return self::FAILURE;
+            }
 
-            return self::FAILURE;
+            $contents = $storage->get($path);
+        } else {
+            if (! is_file($path) || ! is_readable($path)) {
+                $this->error('The backup file does not exist or cannot be read.');
+
+                return self::FAILURE;
+            }
+
+            $contents = file_get_contents($path);
+            if ($contents === false) {
+                $this->error('The backup file could not be read.');
+
+                return self::FAILURE;
+            }
         }
 
         try {

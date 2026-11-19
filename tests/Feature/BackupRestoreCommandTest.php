@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Support\InvestmentPackages;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class BackupRestoreCommandTest extends TestCase
@@ -90,6 +91,25 @@ class BackupRestoreCommandTest extends TestCase
                 '--dry-run' => true,
             ])->assertExitCode(0);
         });
+
+        $this->assertDatabaseHas('users', ['id' => $user->id]);
+        $this->assertDatabaseCount('investments', 0);
+    }
+
+    public function test_dry_run_can_read_a_backup_from_a_storage_disk(): void
+    {
+        $user = User::factory()->create();
+        Storage::fake('private-backups');
+        Storage::disk('private-backups')->put(
+            'lotteria-backup.json',
+            json_encode($this->backupPayload(), JSON_THROW_ON_ERROR)
+        );
+
+        $this->artisan('backup:restore', [
+            'file' => 'lotteria-backup.json',
+            '--disk' => 'private-backups',
+            '--dry-run' => true,
+        ])->assertExitCode(0);
 
         $this->assertDatabaseHas('users', ['id' => $user->id]);
         $this->assertDatabaseCount('investments', 0);

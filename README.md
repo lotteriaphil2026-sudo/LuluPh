@@ -51,17 +51,19 @@ Signup and invited account setup require a mobile number. Existing accounts with
 
 ## Restoring an application backup
 
-The admin backup download contains account and financial data, including password hashes and personal information. Keep the JSON outside source control and transfer it to the server through a protected channel. Do not commit the backup to the repository or place it in a public web directory.
+The admin backup download contains account and financial data, including password hashes and personal information. Keep the JSON outside source control and do not place it in the application repository or a public web directory.
 
-After deploying the matching application version and running its migrations, restore explicitly from a protected server path:
+For Laravel Cloud, create a **private** Object Storage bucket, attach it to the production environment, and deploy the application. Upload the JSON to that bucket using an S3-compatible client such as Cyberduck and the bucket credentials shown in Laravel Cloud. Use the bucket's configured Laravel disk name below (for example, `backups`) and the uploaded object key.
 
 ```bash
 php artisan migrate --force
-php artisan backup:restore /secure/path/lotteria-backup.json --dry-run
-php artisan backup:restore /secure/path/lotteria-backup.json --force
+php artisan backup:restore lotteria-backup.json --disk=backups --dry-run
+php artisan backup:restore lotteria-backup.json --disk=backups --force
 ```
 
-This command is never run automatically during deployment. It replaces users, investments, withdrawals, referral earnings, and package slots. It also clears active sessions and password-reset tokens. The backup does not include identity-verification records, account activity, invitations, passkeys, push subscriptions, blocked IP records, or franchise applications; when any of those records exist, the explicit `--discard-unexported-data` option is required and those records are deleted. Related uploaded files are not included or restored. The package catalog in the backup must match the catalog in the deployed code.
+Run these commands from the Laravel Cloud environment's **Commands** console after deploying the restore command. Cloud's application filesystem is ephemeral, so do not upload the backup into the app filesystem or rely on it persisting between commands or deployments. The command can read the object directly from the configured disk. This restore is never run automatically during deployment.
+
+The restore replaces users, investments, withdrawals, referral earnings, and package slots. It also clears active sessions and password-reset tokens. The backup does not include identity-verification records, account activity, invitations, passkeys, push subscriptions, blocked IP records, or franchise applications; when any of those records exist, the explicit `--discard-unexported-data` option is required and those records are deleted. Related uploaded files are not included or restored. The package catalog in the backup must match the catalog in the deployed code.
 
 If the dry run reports records in the unexported tables, add `--discard-unexported-data` to the restore command only if you intend to delete them. The command prompts before changing data unless `--force` is provided; production restores require the explicit `--force` option. Take and verify a fresh database and file-storage backup before restoring a live site. A restore is a one-time operator action, not part of routine deployments.
 
