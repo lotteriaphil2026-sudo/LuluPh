@@ -7,6 +7,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
+use InvalidArgumentException;
 use JsonException;
 
 class RestoreBackupCommand extends Command
@@ -50,7 +51,30 @@ class RestoreBackupCommand extends Command
         $disk = $this->option('disk');
 
         if ($disk !== null) {
-            $storage = Storage::disk((string) $disk);
+            $disk = (string) $disk;
+            try {
+                $storage = Storage::disk($disk);
+            } catch (InvalidArgumentException) {
+                $diskConfig = config('filesystems.disks.s3');
+                $hasS3Credentials = is_array($diskConfig)
+                    && ! empty($diskConfig['key'])
+                    && ! empty($diskConfig['secret'])
+                    && ! empty($diskConfig['bucket']);
+
+                if ($disk === 'backups' && $hasS3Credentials) {
+                    $disk = 's3';
+                    $this->warn('The [backups] disk is not configured. Falling back to the configured [s3] disk.');
+                    $storage = Storage::disk($disk);
+                } else {
+                    $configuredDisks = array_keys((array) config('filesystems.disks', []));
+                    $this->error("The [$disk] disk is not configured.");
+                    $this->line('Configured filesystem disks: '.($configuredDisks === [] ? '(none)' : implode(', ', $configuredDisks)));
+                    $this->line('Redeploy after attaching the private Object Storage bucket and verify the disk name in Laravel Cloud.');
+
+                    return self::FAILURE;
+                }
+            }
+
             if (! $storage->exists($path)) {
                 $this->error("The backup object does not exist on the [{$disk}] disk.");
 

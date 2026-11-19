@@ -115,6 +115,26 @@ class BackupRestoreCommandTest extends TestCase
         $this->assertDatabaseCount('investments', 0);
     }
 
+    public function test_missing_named_disk_reports_configured_disks(): void
+    {
+        $backup = $this->backupPayload();
+        $path = tempnam(sys_get_temp_dir(), 'lulu-backup-');
+        file_put_contents($path, json_encode($backup, JSON_THROW_ON_ERROR));
+
+        try {
+            $this->artisan('backup:restore', [
+                'file' => $path,
+                '--disk' => 'missing-backups',
+                '--dry-run' => true,
+            ])
+                ->expectsOutputToContain('The [missing-backups] disk is not configured')
+                ->expectsOutputToContain('Configured filesystem disks:')
+                ->assertExitCode(1);
+        } finally {
+            unlink($path);
+        }
+    }
+
     public function test_it_requires_force_before_restoring_in_production(): void
     {
         $user = User::factory()->create();
