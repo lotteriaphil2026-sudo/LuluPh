@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Support\InvestmentPackages;
+use Carbon\Carbon;
+use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -147,7 +149,13 @@ class RestoreBackupCommand extends Command
                 return self::FAILURE;
             }
 
-            $columns = array_fill_keys(Schema::getColumnListing($table), true);
+            $columns = [];
+            $columnTypes = [];
+            foreach (Schema::getColumnListing($table) as $column) {
+                $columns[$column] = true;
+                $columnTypes[$column] = Schema::getColumnType($table, $column);
+            }
+
             foreach ($backup[$table] as $index => $row) {
                 if (! is_array($row) || array_is_list($row)) {
                     $this->error("The backup contains an invalid {$table} record at index {$index}.");
@@ -163,9 +171,9 @@ class RestoreBackupCommand extends Command
                 }
 
                 try {
-                    $backup[$table][$index] = $this->normalizeRow($row);
-                } catch (JsonException $exception) {
-                    $this->error("The backup contains invalid JSON data in {$table} record {$index}: ".$exception->getMessage());
+                    $backup[$table][$index] = $this->normalizeRow($row, $columnTypes);
+                } catch (JsonException|InvalidFormatException $exception) {
+                    $this->error("The backup contains invalid data in {$table} record {$index}: ".$exception->getMessage());
 
                     return self::FAILURE;
                 }
@@ -276,15 +284,31 @@ class RestoreBackupCommand extends Command
 
     /**
      * @param  array<string, mixed>  $row
+     * @param  array<string, string>  $columnTypes
      * @return array<string, mixed>
      *
      * @throws JsonException
+     * @throws InvalidFormatException
      */
-    private function normalizeRow(array $row): array
+    private function normalizeRow(array $row, array $columnTypes): array
     {
         foreach ($row as $column => $value) {
             if (is_array($value)) {
                 $row[$column] = json_encode($value, JSON_THROW_ON_ERROR);
+
+                continue;
+            }
+
+            if (! is_string($value)) {
+                continue;
+            }
+
+            $columnType = $columnTypes[$column] ?? null;
+            if (in_array($columnType, ['date', 'datetime', 'datetimetz', 'timestamp', 'timestamptz'], true)) {
+                $format = $columnType === 'date' ? 'Y-m-d' : 'Y-m-d H:i:s';
+                $row[$column] = Carbon::parse($value)->utc()->format($format);
+            } elseif ($columnType === 'time') {
+                $row[$column] = Carbon::parse($value)->format('H:i:s');
             }
         }
 

@@ -33,6 +33,8 @@ class BackupRestoreCommandTest extends TestCase
             'email' => 'restored@example.test',
             'referred_by' => 32,
             'notifications_read' => '[1,2]',
+            'email_verified_at' => '2026-11-17 10:44:37',
+            'created_at' => '2026-11-17 10:44:37',
         ]);
         $this->assertDatabaseHas('investments', ['id' => 501, 'user_id' => 31]);
         $this->assertDatabaseHas('withdrawals', ['id' => 601, 'user_id' => 31]);
@@ -154,7 +156,7 @@ class BackupRestoreCommandTest extends TestCase
      */
     private function backupPayload(): array
     {
-        $timestamp = '2026-11-17 10:44:37';
+        $timestamp = '2026-11-17T10:44:37.000000Z';
 
         return [
             'site' => 'Lulu',
@@ -165,6 +167,7 @@ class BackupRestoreCommandTest extends TestCase
                     'email' => 'restored@example.test',
                     'password' => bcrypt('synthetic-test-password'),
                     'balance' => 50,
+                    'email_verified_at' => $timestamp,
                     'notifications_read' => [1, 2],
                     'created_at' => $timestamp,
                     'updated_at' => $timestamp,
