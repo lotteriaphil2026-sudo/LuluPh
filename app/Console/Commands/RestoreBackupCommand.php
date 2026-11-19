@@ -52,6 +52,29 @@ class RestoreBackupCommand extends Command
 
         if ($disk !== null) {
             $disk = (string) $disk;
+            $diskConfig = config("filesystems.disks.{$disk}");
+
+            if ($disk === 's3') {
+                $missingS3Settings = [];
+                foreach ([
+                    'key' => 'AWS_ACCESS_KEY_ID',
+                    'secret' => 'AWS_SECRET_ACCESS_KEY',
+                    'bucket' => 'AWS_BUCKET',
+                ] as $configKey => $environmentKey) {
+                    if (! is_array($diskConfig) || empty($diskConfig[$configKey])) {
+                        $missingS3Settings[] = $environmentKey;
+                    }
+                }
+
+                if ($missingS3Settings !== []) {
+                    $this->error('The [s3] disk is incomplete.');
+                    $this->line('Missing Laravel Cloud environment values: '.implode(', ', $missingS3Settings));
+                    $this->line('Attach a private Object Storage bucket to this environment and redeploy, or configure the bucket variables manually.');
+
+                    return self::FAILURE;
+                }
+            }
+
             try {
                 $storage = Storage::disk($disk);
             } catch (InvalidArgumentException) {
