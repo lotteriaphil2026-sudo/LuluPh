@@ -422,8 +422,8 @@
     <p class="payment-modal-copy">Select how you want to make your payment.</p>
     <h3 class="provider-group-title">Bank transfer</h3>
     <div class="bank-list" aria-label="Bank transfer providers">
-      <button class="bank-option" type="button" aria-label="Security Bank" data-payment-provider data-payment-method="bank_transfer" data-provider-name="Security Bank" data-bank-qr="{{ asset('Security Bank.png') }}">
-        <img src="{{ asset('Security Bank.png') }}" alt="Security Bank logo">
+      <button class="bank-option" type="button" aria-label="Security Bank" data-payment-provider data-payment-method="bank_transfer" data-provider-name="Security Bank" data-provider-key="bpi" data-bank-qr="{{ asset('Security Bank.png') }}">
+        <img src="{{ asset('security-bank-logo.png') }}" alt="Security Bank logo">
       </button>
       <button class="bank-option" type="button" aria-label="LandBank" data-payment-provider data-payment-method="bank_transfer" data-provider-name="LandBank" data-bank-qr="{{ asset('LandBank.png') }}">
         <img src="{{ asset('Landbank.svg') }}" alt="LandBank logo">
@@ -711,7 +711,7 @@
     document.querySelectorAll('[data-payment-provider]').forEach(function (button) {
       button.addEventListener('click', function () {
         paymentInput.value = button.dataset.paymentMethod;
-        var providerKey = button.dataset.providerName.toLowerCase().replace(/\s+/g, '');
+        var providerKey = button.dataset.providerKey || button.dataset.providerName.toLowerCase().replace(/\s+/g, '');
         var paymentUrl = new URL('{{ url('/invest/payment') }}/' + providerKey, window.location.origin);
         paymentUrl.searchParams.set('package', '{{ $packageKey }}');
         paymentUrl.searchParams.set('amount', Number.isFinite(currentAmount()) ? currentAmount().toFixed(2) : '');

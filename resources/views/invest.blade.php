@@ -874,7 +874,7 @@
         </div>
         <div class="payment-icons">
           <img src="{{ asset('Landbank.svg') }}" alt="Landbank logo" loading="lazy" decoding="async">
-          <img src="{{ asset('Security Bank.png') }}" alt="Security Bank logo" loading="lazy" decoding="async">
+          <img src="{{ asset('security-bank-logo.png') }}" alt="Security Bank logo" loading="lazy" decoding="async">
         </div>
       </button>
       <button class="payment-choice" type="button" data-payment-method="account_balance">
@@ -907,7 +907,7 @@
         <span>Landbank</span>
       </button>
       <button class="bank-logo-item" type="button" data-bank-qr="{{ asset('Security Bank.png') }}" data-bank-name="Security Bank">
-        <img src="{{ asset('Security Bank.png') }}" alt="Security Bank logo" loading="lazy" decoding="async">
+        <img src="{{ asset('security-bank-logo.png') }}" alt="Security Bank logo" loading="lazy" decoding="async">
         <span>Security Bank</span>
       </button>
     </div>

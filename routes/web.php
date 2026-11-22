@@ -656,7 +656,7 @@ Route::get('/invest/payment/{provider}', function (string $provider) {
         ],
         'bpi' => [
             'name' => 'Security Bank',
-            'logo' => 'Security Bank.png',
+            'logo' => 'security-bank-logo.png',
             'qr' => 'Security Bank.png',
             'launch_url' => 'https://www.securitybank.com/',
             'background' => '#1c3f94',

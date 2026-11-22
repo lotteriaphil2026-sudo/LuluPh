@@ -71,7 +71,9 @@ class InvestmentPurchaseTest extends TestCase
             ->assertSee('Choose bank transfer or e-wallet')
             ->assertSee('Choose Security Bank, LandBank, or Palawan Pay')
             ->assertSee('data-provider-name="Security Bank"', false)
+            ->assertSee('data-provider-key="bpi"', false)
             ->assertSee('data-bank-qr="'.asset('Security Bank.png').'"', false)
+            ->assertSee('src="'.asset('security-bank-logo.png').'"', false)
             ->assertSee('data-provider-name="LandBank"', false)
             ->assertSee('data-bank-qr="'.asset('LandBank.png').'"', false)
             ->assertSee('data-provider-name="PalawanPay"', false)
@@ -141,7 +143,9 @@ class InvestmentPurchaseTest extends TestCase
                 ->assertSee("--provider-accent: {$accent}", false);
 
             if ($provider === 'bpi') {
-                $response->assertSee(asset('Security Bank.png'), false);
+                $response
+                    ->assertSee(asset('security-bank-logo.png'), false)
+                    ->assertSee(asset('Security Bank.png'), false);
             } elseif ($provider === 'landbank') {
                 $response->assertSee(asset('LandBank.png'), false);
             } elseif ($provider === 'palawanpay') {
@@ -150,6 +154,7 @@ class InvestmentPurchaseTest extends TestCase
         }
 
         $this->assertFileExists(public_path('Security Bank.png'));
+        $this->assertFileExists(public_path('security-bank-logo.png'));
         $this->assertFileExists(public_path('LandBank.png'));
         $this->assertFileExists(public_path('PalawanPay.png'));
         $this->get('/invest/payment/gcash?package=crunch&amount=129&currency=USD')
