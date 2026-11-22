@@ -1016,6 +1016,22 @@
             {{ $referrer ? ($referrer->name ?: $referrer->email) : ($user->is_admin ? 'Admin account' : 'Missing referrer') }}
           </div>
         </div>
+        <div class="modal-field modal-full-width">
+          <span class="modal-label">Referral Link</span>
+          @if ($user->referral_code)
+            @php $referralLink = route('signup', ['ref' => $user->referral_code]); @endphp
+            <div class="modal-referral-link">
+              <a class="modal-value" href="{{ $referralLink }}">{{ $referralLink }}</a>
+              <button
+                type="button"
+                class="modal-copy-referral"
+                data-copy-referral-link="{{ $referralLink }}"
+              >Copy referral link</button>
+            </div>
+          @else
+            <div class="modal-value">Not assigned</div>
+          @endif
+        </div>
         @php
           $userInvestments = $user->investments()->latest()->get();
           $approvedInvestments = $userInvestments->where('status', 'approved');
@@ -1771,6 +1787,40 @@
       document.body.style.overflow = '';
     }
   }
+
+  document.getElementById('userDetailsModalBody').addEventListener('click', async function (event) {
+    var button = event.target.closest('[data-copy-referral-link]');
+    if (!button) {
+      return;
+    }
+
+    var originalLabel = 'Copy referral link';
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(button.dataset.copyReferralLink);
+      } else {
+        var input = document.createElement('textarea');
+        input.value = button.dataset.copyReferralLink;
+        input.setAttribute('readonly', '');
+        input.style.position = 'fixed';
+        input.style.opacity = '0';
+        document.body.appendChild(input);
+        input.select();
+        var copied = document.execCommand('copy');
+        input.remove();
+        if (!copied) {
+          throw new Error('Clipboard copy was rejected.');
+        }
+      }
+
+      button.textContent = 'Referral link copied';
+      window.setTimeout(function () { button.textContent = originalLabel; }, 2500);
+    } catch (error) {
+      console.error('Could not copy referral link.', error);
+      button.textContent = 'Copy failed';
+      window.setTimeout(function () { button.textContent = originalLabel; }, 2500);
+    }
+  });
 
   document.addEventListener('click', function (event) {
     var modal = document.getElementById('userDetailsModal');

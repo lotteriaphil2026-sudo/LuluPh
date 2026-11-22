@@ -600,6 +600,27 @@
     word-break: break-word;
   }
 
+  .modal-referral-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .modal-referral-link a {
+    min-width: 0;
+  }
+
+  .modal-copy-referral {
+    flex-shrink: 0;
+    padding: 8px 11px;
+    border: 0;
+    border-radius: 8px;
+    background: #0e8a5a;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
   .modal-help {
     color: #64748B;
     font-size: 12px;

@@ -101,6 +101,9 @@ class AdminLoginTest extends TestCase
         $response->assertSee('#userDetailsModalBody > .modal-card', false);
         $response->assertSee('View details');
         $response->assertSee('Identity Verification');
+        $response->assertSee('Referral Link');
+        $response->assertSee(route('signup', ['ref' => $user->referral_code]), false);
+        $response->assertSee('data-copy-referral-link=', false);
         $response->assertSee('Mark verified');
         $response->assertSee('Block IP address');
         $response->assertSee('class="users-page"', false);
