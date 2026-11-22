@@ -69,9 +69,9 @@ class InvestmentPurchaseTest extends TestCase
             ->assertSee('paymentModalAmount', false)
             ->assertSee('data-payment="bank_or_wallet"', false)
             ->assertSee('Choose bank transfer or e-wallet')
-            ->assertSee('Choose BPI, LandBank, or Palawan Pay')
-            ->assertSee('data-provider-name="BPI"', false)
-            ->assertSee('data-bank-qr="'.asset('bpi.png').'"', false)
+            ->assertSee('Choose Security Bank, LandBank, or Palawan Pay')
+            ->assertSee('data-provider-name="Security Bank"', false)
+            ->assertSee('data-bank-qr="'.asset('Security Bank.png').'"', false)
             ->assertSee('data-provider-name="LandBank"', false)
             ->assertSee('data-bank-qr="'.asset('LandBank.png').'"', false)
             ->assertSee('data-provider-name="PalawanPay"', false)
@@ -97,7 +97,7 @@ class InvestmentPurchaseTest extends TestCase
             ->assertSee('Choose a payment method')
             ->assertSee('Banks')
             ->assertSee('E-wallets')
-            ->assertSee('BPI')
+            ->assertSee('Security Bank')
             ->assertSee('LandBank')
             ->assertSee('Palawan Pay')
             ->assertDontSee('BDO')
@@ -128,7 +128,7 @@ class InvestmentPurchaseTest extends TestCase
 
         $providerThemes = [
             'landbank' => ['#006b3f', '#f5c542'],
-            'bpi' => ['#005baa', '#d71920'],
+            'bpi' => ['#1c3f94', '#ef3e42'],
             'palawanpay' => ['#078b4f', '#f4c542'],
         ];
 
@@ -141,7 +141,7 @@ class InvestmentPurchaseTest extends TestCase
                 ->assertSee("--provider-accent: {$accent}", false);
 
             if ($provider === 'bpi') {
-                $response->assertSee(asset('bpi.png'), false);
+                $response->assertSee(asset('Security Bank.png'), false);
             } elseif ($provider === 'landbank') {
                 $response->assertSee(asset('LandBank.png'), false);
             } elseif ($provider === 'palawanpay') {
@@ -149,7 +149,7 @@ class InvestmentPurchaseTest extends TestCase
             }
         }
 
-        $this->assertFileExists(public_path('bpi.png'));
+        $this->assertFileExists(public_path('Security Bank.png'));
         $this->assertFileExists(public_path('LandBank.png'));
         $this->assertFileExists(public_path('PalawanPay.png'));
         $this->get('/invest/payment/gcash?package=crunch&amount=129&currency=USD')

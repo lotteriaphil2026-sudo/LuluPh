@@ -21,7 +21,7 @@ class WithdrawalRequestTest extends TestCase
     {
         $user = User::factory()->create([
             'balance' => 284.77,
-            'bank_name' => 'BPI',
+            'bank_name' => 'Security Bank',
             'bank_account_number' => '1234567890',
             'bank_account_holder' => 'Withdrawal Client',
             'withdrawal_account_type' => 'bank',
@@ -32,7 +32,7 @@ class WithdrawalRequestTest extends TestCase
             'user_id' => $user->id,
             'amount' => 25,
             'payment_method' => 'bank_transfer',
-            'bank_name' => 'BPI',
+            'bank_name' => 'Security Bank',
             'account_number' => '1234567890',
             'account_holder' => 'Withdrawal Client',
             'status' => 'pending',
@@ -46,8 +46,8 @@ class WithdrawalRequestTest extends TestCase
             ->assertSee('$284.77')
             ->assertSee('data-withdrawal-amount="20.00"', false)
             ->assertSee('Saved bank account')
-            ->assertSee('BPI · ••••7890')
-            ->assertSee('$25.00 · BPI')
+            ->assertSee('Security Bank · ••••7890')
+            ->assertSee('$25.00 · Security Bank')
             ->assertSee('Pending')
             ->assertSee(route('withdrawals.store'), false)
             ->assertSee(route('history'), false)

@@ -394,7 +394,7 @@
       </button>
       <button class="payment-choice" type="button" data-payment="bank_or_wallet" aria-pressed="false">
         <span class="payment-choice-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10h10M4 10v7m3-7v7m3-7v7M2 20h10M7 3l5 4H2l5-4Z"/><rect x="15" y="3" width="7" height="18" rx="2"/><path d="M17 17h3"/></svg></span>
-        <span class="payment-choice-copy"><span class="payment-choice-title">Bank transfer / E-wallet</span><span class="payment-choice-description">Choose BPI, LandBank, or Palawan Pay</span></span>
+        <span class="payment-choice-copy"><span class="payment-choice-title">Bank transfer / E-wallet</span><span class="payment-choice-description">Choose Security Bank, LandBank, or Palawan Pay</span></span>
         <span class="payment-choice-check" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg></span>
       </button>
       <button class="payment-choice" type="button" data-payment="crypto" aria-pressed="false">
@@ -422,8 +422,8 @@
     <p class="payment-modal-copy">Select how you want to make your payment.</p>
     <h3 class="provider-group-title">Bank transfer</h3>
     <div class="bank-list" aria-label="Bank transfer providers">
-      <button class="bank-option" type="button" aria-label="BPI" data-payment-provider data-payment-method="bank_transfer" data-provider-name="BPI" data-bank-qr="{{ asset('bpi.png') }}">
-        <img src="{{ asset('Bpi.svg') }}" alt="BPI logo">
+      <button class="bank-option" type="button" aria-label="Security Bank" data-payment-provider data-payment-method="bank_transfer" data-provider-name="Security Bank" data-bank-qr="{{ asset('Security Bank.png') }}">
+        <img src="{{ asset('Security Bank.png') }}" alt="Security Bank logo">
       </button>
       <button class="bank-option" type="button" aria-label="LandBank" data-payment-provider data-payment-method="bank_transfer" data-provider-name="LandBank" data-bank-qr="{{ asset('LandBank.png') }}">
         <img src="{{ asset('Landbank.svg') }}" alt="LandBank logo">

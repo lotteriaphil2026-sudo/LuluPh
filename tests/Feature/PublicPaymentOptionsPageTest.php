@@ -19,12 +19,12 @@ class PublicPaymentOptionsPageTest extends TestCase
             ->assertSee('Scan to pay')
             ->assertSee('Choose a payment method')
             ->assertSee('aria-current="true"', false)
-            ->assertSee('href="'.asset('BPIQR.png').'" download="BPIQR.png"', false)
+            ->assertSee('href="'.asset('Security Bank.png').'" download="Security Bank.png"', false)
             ->assertSee(route('payment-options', ['provider' => 'landbank']), false)
             ->assertSee(route('payment-options', ['provider' => 'palawanpay']), false);
 
         $providers = [
-            'bpi' => ['BPI', 'BPIQR.png'],
+            'bpi' => ['Security Bank', 'Security Bank.png'],
             'landbank' => ['Landbank', 'LandbankQR.png'],
             'palawanpay' => ['Palawan Pay', 'PalawanPay.png'],
         ];
@@ -39,7 +39,7 @@ class PublicPaymentOptionsPageTest extends TestCase
 
         $this->assertFileExists(public_path('PalawanPay.png'));
         $this->assertFileExists(public_path('LandbankQR.png'));
-        $this->assertFileExists(public_path('BPIQR.png'));
+        $this->assertFileExists(public_path('Security Bank.png'));
     }
 
     public function test_payment_options_returns_not_found_for_an_unknown_provider(): void

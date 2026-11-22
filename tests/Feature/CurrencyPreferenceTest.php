@@ -87,7 +87,7 @@ class CurrencyPreferenceTest extends TestCase
         $this->actingAs($user)
             ->post(route('withdrawals.store'), [
                 'amount' => '1500.00',
-                'bank_name' => 'BPI',
+                'bank_name' => 'Security Bank',
                 'account_number' => '1234567890',
                 'account_holder' => $user->name,
                 'account_type' => 'bank',

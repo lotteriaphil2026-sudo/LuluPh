@@ -87,8 +87,8 @@ main{padding:10px 20px 28px}
 
     <section aria-labelledby="account-title">
       <h2 class="label" id="account-title">Withdrawal Account</h2>
-      <button class="account-card" type="button" aria-label="Selected withdrawal account, BPI ending 4365">
-        <span class="small">Saved bank account</span><div class="name">BPI · 3546854365</div>
+      <button class="account-card" type="button" aria-label="Selected withdrawal account, Security Bank ending 4365">
+        <span class="small">Saved bank account</span><div class="name">Security Bank · 3546854365</div>
         <span class="check"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4 10-10"/></svg></span>
       </button>
       <button class="add-account" id="addAccount" type="button">+ Add another account</button>
@@ -100,9 +100,9 @@ main{padding:10px 20px 28px}
 
     <div class="recent-head"><h2>Recent Withdrawals</h2><button class="see-all" type="button">See All →</button></div>
     <div class="tx-list" id="txList">
-      <div class="tx"><div class="left"><div class="amt num">$25.00 · Bank transfer</div><div class="meta">Oct 4, 2026 · BPI ••••4365</div></div><span class="badge pending">Pending</span></div>
-      <div class="tx"><div class="left"><div class="amt num">$25.00 · Bank transfer</div><div class="meta">Sep 28, 2026 · BPI ••••4365</div></div><span class="badge approved">Approved</span></div>
-      <div class="tx"><div class="left"><div class="amt num">$25.00 · Bank transfer</div><div class="meta">Sep 17, 2026 · BPI ••••4365</div></div><span class="badge approved">Approved</span></div>
+      <div class="tx"><div class="left"><div class="amt num">$25.00 · Bank transfer</div><div class="meta">Oct 4, 2026 · Security Bank ••••4365</div></div><span class="badge pending">Pending</span></div>
+      <div class="tx"><div class="left"><div class="amt num">$25.00 · Bank transfer</div><div class="meta">Sep 28, 2026 · Security Bank ••••4365</div></div><span class="badge approved">Approved</span></div>
+      <div class="tx"><div class="left"><div class="amt num">$25.00 · Bank transfer</div><div class="meta">Sep 17, 2026 · Security Bank ••••4365</div></div><span class="badge approved">Approved</span></div>
     </div>
   </main>
   <div class="home" aria-hidden="true"></div>
@@ -111,7 +111,7 @@ main{padding:10px 20px 28px}
 <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
   <div class="sheet-card">
     <h3 id="sheetTitle">Add withdrawal account</h3><p>Enter the bank account you want to use for future withdrawals.</p>
-    <div class="field"><label for="bank">Bank name</label><input id="bank" placeholder="e.g. BPI" /></div>
+    <div class="field"><label for="bank">Bank name</label><input id="bank" placeholder="e.g. Security Bank" /></div>
     <div class="field"><label for="acct">Account number</label><input id="acct" inputmode="numeric" placeholder="Enter account number" /></div>
     <div class="sheet-actions"><button class="btn-ghost" id="cancelSheet" type="button">Cancel</button><button class="btn-save" id="saveAccount" type="button">Save account</button></div>
   </div>
@@ -134,7 +134,7 @@ function validate(){
 quick.forEach(b=>b.addEventListener('click',()=>{amount.value=Number(b.dataset.amount).toFixed(2);validate();amount.focus()}));
 amount.addEventListener('input',validate); amount.addEventListener('blur',()=>{if(amount.value && !Number.isNaN(parseFloat(amount.value))) amount.value=parseFloat(amount.value).toFixed(2);validate()});
 const toast=document.getElementById('toast');function showToast(msg){toast.textContent=msg;toast.classList.add('show');clearTimeout(showToast.t);showToast.t=setTimeout(()=>toast.classList.remove('show'),2600)}
-btn.addEventListener('click',()=>{if(!validate()){if(!amount.value){error.textContent='Enter an amount to withdraw.';amount.focus()}return}const v=parseFloat(amount.value);const row=document.createElement('div');row.className='tx';row.innerHTML=`<div class="left"><div class="amt num">$${v.toFixed(2)} · Bank transfer</div><div class="meta">Just now · BPI ••••4365</div></div><span class="badge pending">Pending</span>`;document.getElementById('txList').prepend(row);showToast('Withdrawal request submitted.');amount.value='';validate()});
+btn.addEventListener('click',()=>{if(!validate()){if(!amount.value){error.textContent='Enter an amount to withdraw.';amount.focus()}return}const v=parseFloat(amount.value);const row=document.createElement('div');row.className='tx';row.innerHTML=`<div class="left"><div class="amt num">$${v.toFixed(2)} · Bank transfer</div><div class="meta">Just now · Security Bank ••••4365</div></div><span class="badge pending">Pending</span>`;document.getElementById('txList').prepend(row);showToast('Withdrawal request submitted.');amount.value='';validate()});
 const sheet=document.getElementById('sheet');document.getElementById('addAccount').addEventListener('click',()=>sheet.classList.add('open'));document.getElementById('cancelSheet').addEventListener('click',()=>sheet.classList.remove('open'));sheet.addEventListener('click',e=>{if(e.target===sheet)sheet.classList.remove('open')});document.getElementById('saveAccount').addEventListener('click',()=>{const bank=document.getElementById('bank').value.trim(),acct=document.getElementById('acct').value.trim();if(!bank||acct.length<4){showToast('Enter a valid bank name and account number.');return}sheet.classList.remove('open');showToast('Account saved for this demo.')});
 </script>
 </body>

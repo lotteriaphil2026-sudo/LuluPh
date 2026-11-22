@@ -607,7 +607,7 @@
     function updateAccountLength() {
       var lengths = {
         'GCash': 13, 'Maya': 13, 'GrabPay': 13, 'ShopeePay': 13, 'Coins.ph': 13,
-        'BDO Unibank': 10, 'BPI': 10, 'Metrobank': 13, 'LandBank': 10, 'UnionBank': 12
+        'BDO Unibank': 10, 'Security Bank': 10, 'Metrobank': 13, 'LandBank': 10, 'UnionBank': 12
       };
       var length = lengths[provider.value] || 0;
       numberInput.maxLength = length || 255;

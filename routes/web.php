@@ -63,11 +63,11 @@ Route::get('/terms-of-service', function () {
 Route::get('/payment-options', function () {
     $providers = [
         'bpi' => [
-            'name' => 'BPI',
-            'qr' => 'BPIQR.png',
-            'initials' => 'BPI',
-            'background' => '#005baa',
-            'accent' => '#d71920',
+            'name' => 'Security Bank',
+            'qr' => 'Security Bank.png',
+            'initials' => 'SB',
+            'background' => '#1c3f94',
+            'accent' => '#ef3e42',
         ],
         'landbank' => [
             'name' => 'Landbank',
@@ -655,12 +655,12 @@ Route::get('/invest/payment/{provider}', function (string $provider) {
             'accent' => '#f5c542',
         ],
         'bpi' => [
-            'name' => 'BPI',
-            'logo' => 'Bpi.svg',
-            'qr' => 'bpi.png',
-            'launch_url' => 'https://online.bpi.com.ph/',
-            'background' => '#005baa',
-            'accent' => '#d71920',
+            'name' => 'Security Bank',
+            'logo' => 'Security Bank.png',
+            'qr' => 'Security Bank.png',
+            'launch_url' => 'https://www.securitybank.com/',
+            'background' => '#1c3f94',
+            'accent' => '#ef3e42',
         ],
         'palawanpay' => [
             'name' => 'Palawan Pay',
@@ -894,7 +894,7 @@ Route::get('/withdraw', function () {
         'recentWithdrawals' => $recentWithdrawals,
         'withdrawalProviders' => [
             'e_wallet' => ['GCash', 'Maya', 'GrabPay', 'ShopeePay', 'Coins.ph'],
-            'bank' => ['BDO Unibank', 'BPI', 'Metrobank', 'LandBank', 'UnionBank'],
+            'bank' => ['BDO Unibank', 'Security Bank', 'Metrobank', 'LandBank', 'UnionBank'],
         ],
     ]);
 })->middleware(['auth', RestrictUserAccess::class])->name('withdraw');
@@ -908,7 +908,7 @@ Route::get('/withdrawals/{withdrawal}/receipt', function (Request $request, With
 Route::post('/withdrawals', function (Request $request) {
     $providers = [
         'e_wallet' => ['GCash', 'Maya', 'GrabPay', 'ShopeePay', 'Coins.ph'],
-        'bank' => ['BDO Unibank', 'BPI', 'Metrobank', 'LandBank', 'UnionBank'],
+        'bank' => ['BDO Unibank', 'Security Bank', 'Metrobank', 'LandBank', 'UnionBank'],
     ];
     $accountPatterns = [
         'GCash' => '/^(09|\+639)\d{9}$/',
@@ -917,7 +917,7 @@ Route::post('/withdrawals', function (Request $request) {
         'ShopeePay' => '/^(09|\+639)\d{9}$/',
         'Coins.ph' => '/^(09|\+639)\d{9}$/',
         'BDO Unibank' => '/^\d{10}$/',
-        'BPI' => '/^\d{10}$/',
+        'Security Bank' => '/^\d{10}$/',
         'Metrobank' => '/^\d{13}$/',
         'LandBank' => '/^\d{10}$/',
         'UnionBank' => '/^\d{12}$/',
@@ -1024,7 +1024,7 @@ Route::post('/withdrawals', function (Request $request) {
 Route::post('/withdrawal-account', function (Request $request) {
     $providers = [
         'e_wallet' => ['GCash', 'Maya', 'GrabPay', 'ShopeePay', 'Coins.ph'],
-        'bank' => ['BDO Unibank', 'BPI', 'Metrobank', 'LandBank', 'UnionBank'],
+        'bank' => ['BDO Unibank', 'Security Bank', 'Metrobank', 'LandBank', 'UnionBank'],
     ];
     $patterns = [
         'GCash' => '/^(09|\+639)\d{9}$/',
@@ -1033,7 +1033,7 @@ Route::post('/withdrawal-account', function (Request $request) {
         'ShopeePay' => '/^(09|\+639)\d{9}$/',
         'Coins.ph' => '/^(09|\+639)\d{9}$/',
         'BDO Unibank' => '/^\d{10}$/',
-        'BPI' => '/^\d{10}$/',
+        'Security Bank' => '/^\d{10}$/',
         'Metrobank' => '/^\d{13}$/',
         'LandBank' => '/^\d{10}$/',
         'UnionBank' => '/^\d{12}$/',

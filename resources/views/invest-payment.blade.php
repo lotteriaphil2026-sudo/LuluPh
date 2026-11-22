@@ -94,12 +94,12 @@
   ];
   $providerColors = [
       'landbank' => '#006b3f',
-      'bpi' => '#005baa',
+      'bpi' => '#1c3f94',
       'palawanpay' => '#078b4f',
   ];
   $providerInitials = [
       'landbank' => 'LANDBANK',
-      'bpi' => 'BPI',
+      'bpi' => 'SB',
       'palawanpay' => 'PALAWAN',
   ];
 @endphp
