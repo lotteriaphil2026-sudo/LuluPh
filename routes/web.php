@@ -894,7 +894,7 @@ Route::get('/withdraw', function () {
         'recentWithdrawals' => $recentWithdrawals,
         'withdrawalProviders' => [
             'e_wallet' => ['GCash', 'Maya', 'GrabPay', 'ShopeePay', 'Coins.ph'],
-            'bank' => ['BDO Unibank', 'Security Bank', 'Metrobank', 'LandBank', 'UnionBank'],
+            'bank' => ['BDO Unibank', 'BPI', 'Security Bank', 'Metrobank', 'LandBank', 'UnionBank'],
         ],
     ]);
 })->middleware(['auth', RestrictUserAccess::class])->name('withdraw');
@@ -908,7 +908,7 @@ Route::get('/withdrawals/{withdrawal}/receipt', function (Request $request, With
 Route::post('/withdrawals', function (Request $request) {
     $providers = [
         'e_wallet' => ['GCash', 'Maya', 'GrabPay', 'ShopeePay', 'Coins.ph'],
-        'bank' => ['BDO Unibank', 'Security Bank', 'Metrobank', 'LandBank', 'UnionBank'],
+        'bank' => ['BDO Unibank', 'BPI', 'Security Bank', 'Metrobank', 'LandBank', 'UnionBank'],
     ];
     $accountPatterns = [
         'GCash' => '/^(09|\+639)\d{9}$/',
@@ -917,6 +917,7 @@ Route::post('/withdrawals', function (Request $request) {
         'ShopeePay' => '/^(09|\+639)\d{9}$/',
         'Coins.ph' => '/^(09|\+639)\d{9}$/',
         'BDO Unibank' => '/^\d{10}$/',
+        'BPI' => '/^\d{10}$/',
         'Security Bank' => '/^\d{10}$/',
         'Metrobank' => '/^\d{13}$/',
         'LandBank' => '/^\d{10}$/',
@@ -1024,7 +1025,7 @@ Route::post('/withdrawals', function (Request $request) {
 Route::post('/withdrawal-account', function (Request $request) {
     $providers = [
         'e_wallet' => ['GCash', 'Maya', 'GrabPay', 'ShopeePay', 'Coins.ph'],
-        'bank' => ['BDO Unibank', 'Security Bank', 'Metrobank', 'LandBank', 'UnionBank'],
+        'bank' => ['BDO Unibank', 'BPI', 'Security Bank', 'Metrobank', 'LandBank', 'UnionBank'],
     ];
     $patterns = [
         'GCash' => '/^(09|\+639)\d{9}$/',
@@ -1033,6 +1034,7 @@ Route::post('/withdrawal-account', function (Request $request) {
         'ShopeePay' => '/^(09|\+639)\d{9}$/',
         'Coins.ph' => '/^(09|\+639)\d{9}$/',
         'BDO Unibank' => '/^\d{10}$/',
+        'BPI' => '/^\d{10}$/',
         'Security Bank' => '/^\d{10}$/',
         'Metrobank' => '/^\d{13}$/',
         'LandBank' => '/^\d{10}$/',

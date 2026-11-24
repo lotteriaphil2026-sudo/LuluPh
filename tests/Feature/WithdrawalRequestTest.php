@@ -47,6 +47,7 @@ class WithdrawalRequestTest extends TestCase
             ->assertSee('data-withdrawal-amount="20.00"', false)
             ->assertSee('Saved bank account')
             ->assertSee('Security Bank · ••••7890')
+            ->assertSee('<option value="BPI" data-provider-type="bank"', false)
             ->assertSee('$25.00 · Security Bank')
             ->assertSee('Pending')
             ->assertSee(route('withdrawals.store'), false)
@@ -191,6 +192,42 @@ class WithdrawalRequestTest extends TestCase
         $this->assertSame('1234567890', $user->fresh()->bank_account_number);
         $this->assertSame('Test User', $user->fresh()->bank_account_holder);
         $this->assertEquals(450.0, (float) $user->fresh()->balance);
+    }
+
+    public function test_user_can_save_and_withdraw_to_a_bpi_account(): void
+    {
+        $user = User::factory()->create([
+            'balance' => 500,
+            'pin_hash' => Hash::make('1234'),
+        ]);
+
+        $this->actingAs($user)->withSession(['pin_verified' => true]);
+
+        $this->post(route('withdrawal-account.store'), [
+            'account_type' => 'bank',
+            'bank_name' => 'BPI',
+            'account_number' => '1234567890',
+            'account_holder' => 'Test User',
+        ])->assertRedirect(route('withdraw'));
+
+        $this->assertSame('BPI', $user->fresh()->bank_name);
+        $this->assertSame('1234567890', $user->fresh()->bank_account_number);
+
+        $this->post(route('withdrawals.store'), [
+            'amount' => 50,
+            'account_type' => 'bank',
+            'bank_name' => 'BPI',
+            'account_number' => '1234567890',
+            'account_holder' => 'Test User',
+        ]);
+
+        $this->assertDatabaseHas('withdrawals', [
+            'user_id' => $user->id,
+            'amount' => 50.00,
+            'bank_name' => 'BPI',
+            'account_number' => '1234567890',
+            'account_holder' => 'Test User',
+        ]);
     }
 
     public function test_withdrawal_receipt_shows_submitted_time_in_manila_timezone(): void
