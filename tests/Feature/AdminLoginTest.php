@@ -178,7 +178,7 @@ class AdminLoginTest extends TestCase
             ->assertSee('<span class="request-badge" aria-hidden="true">3</span>', false);
     }
 
-    public function test_admin_dashboard_user_list_is_ordered_by_newest_accounts_first(): void
+    public function test_admin_dashboard_lists_labeled_accounts_first_and_newest_first_within_each_group(): void
     {
         $admin = User::factory()->create([
             'pin_hash' => Hash::make('123456'),
@@ -189,6 +189,13 @@ class AdminLoginTest extends TestCase
             'name' => 'Oldest User',
             'email' => 'oldest@example.com',
             'created_at' => now()->subDays(7),
+        ]);
+
+        User::factory()->create([
+            'name' => 'Priority User',
+            'email' => 'priority@example.com',
+            'admin_label' => 'Priority',
+            'created_at' => now()->subDays(14),
         ]);
 
         $newUser = User::factory()->create([
@@ -202,7 +209,7 @@ class AdminLoginTest extends TestCase
             ->get('/admin/dashboard');
 
         $response->assertOk();
-        $response->assertSeeInOrder(['Newest User', 'Oldest User']);
+        $response->assertSeeInOrder(['Priority User', 'Newest User', 'Oldest User']);
     }
 
     public function test_admin_user_search_suggestions_match_user_details(): void

@@ -53,6 +53,7 @@ class UserManagementController extends Controller
                         ->orWhere('region', 'like', "%{$search}%");
                 });
             })
+            ->orderByRaw("CASE WHEN admin_label IS NULL OR admin_label = '' THEN 1 ELSE 0 END")
             ->orderByDesc('created_at')
             ->paginate(20)
             ->withQueryString();
