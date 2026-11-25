@@ -420,6 +420,7 @@
     color: #e8fff4;
     font-size: 14px;
     font-weight: 750;
+    cursor: pointer;
   }
 
   .users-page .user-cell-name {
@@ -429,7 +430,7 @@
     font-size: 14px;
     font-weight: 650;
     line-height: 1.25;
-    cursor: text;
+    cursor: pointer;
   }
 
   .users-page .user-admin-label {
@@ -928,24 +929,23 @@
                   tabindex="0"
                   role="button"
                   aria-label="View details for {{ $user->name }}"
-                  onclick="openUserModal('userModal-{{ $user->id }}')"
+                  onclick="if (!event.target.closest('[data-user-label-editor]')) openUserModal('userModal-{{ $user->id }}')"
                   onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openUserModal('userModal-{{ $user->id }}'); }"
                 >
                   <!-- User Information -->
                   <td>
                     <div class="user-info">
-                      <span class="user-avatar">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
+                      <span
+                        class="user-avatar"
+                        data-user-label-editor
+                        data-user-id="{{ $user->id }}"
+                        data-user-name="{{ $user->name }}"
+                        data-user-label="{{ $user->admin_label }}"
+                        data-save-url="{{ route('admin.users.label', $user) }}"
+                        title="Click to view details; double-click to edit the label"
+                      >{{ strtoupper(substr($user->name, 0, 1)) }}</span>
                       <div>
-                        <span
-                          class="user-cell-name"
-                          data-user-label-editor
-                          data-user-id="{{ $user->id }}"
-                          data-user-name="{{ $user->name }}"
-                          data-user-label="{{ $user->admin_label }}"
-                          data-save-url="{{ route('admin.users.label', $user) }}"
-                          title="Double-click to edit user label"
-                          onclick="event.stopPropagation()"
-                        >{{ $user->name }}</span>
+                        <span class="user-cell-name">{{ $user->name }}</span>
                         <span class="user-cell-email">{{ $user->email }}</span>
                       </div>
                     </div>
@@ -1800,8 +1800,23 @@
     var error = document.getElementById('userLabelError');
     var saveButton = document.getElementById('userLabelSave');
     var activeEditor = null;
+    var avatarClickTimers = new WeakMap();
 
     if (!usersPage || !modal || !form || !input) return;
+
+    usersPage.addEventListener('click', function (event) {
+      var editor = event.target.closest('[data-user-label-editor]');
+      if (!editor) return;
+
+      var existingTimer = avatarClickTimers.get(editor);
+      if (existingTimer) window.clearTimeout(existingTimer);
+
+      var timer = window.setTimeout(function () {
+        avatarClickTimers.delete(editor);
+        openUserModal('userModal-' + editor.dataset.userId);
+      }, 500);
+      avatarClickTimers.set(editor, timer);
+    });
 
     function closeModal() {
       modal.classList.remove('is-open');
@@ -1816,6 +1831,10 @@
 
       event.preventDefault();
       event.stopPropagation();
+      var clickTimer = avatarClickTimers.get(editor);
+      if (clickTimer) window.clearTimeout(clickTimer);
+      avatarClickTimers.delete(editor);
+      closeUserModal();
       activeEditor = editor;
       input.value = editor.dataset.userLabel || '';
       userName.textContent = editor.dataset.userName || '';
