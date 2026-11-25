@@ -429,6 +429,25 @@
     font-size: 14px;
     font-weight: 650;
     line-height: 1.25;
+    cursor: text;
+  }
+
+  .users-page .user-admin-label {
+    display: inline-block;
+    max-width: 180px;
+    overflow: hidden;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: #e6f7ef;
+    color: #075a3b;
+    font-size: 12px;
+    font-weight: 650;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .user-label-modal-card {
+    width: min(440px, 100%);
   }
 
   .users-page .user-cell-email {
@@ -895,6 +914,7 @@
           <tr>
             <th>USER</th>
             <th>REFERRER</th>
+            <th>LABEL</th>
             <th>BALANCE</th>
             <th>STATUS</th>
             <th>REGISTERED</th>
@@ -916,7 +936,16 @@
                     <div class="user-info">
                       <span class="user-avatar">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
                       <div>
-                        <span class="user-cell-name">{{ $user->name }}</span>
+                        <span
+                          class="user-cell-name"
+                          data-user-label-editor
+                          data-user-id="{{ $user->id }}"
+                          data-user-name="{{ $user->name }}"
+                          data-user-label="{{ $user->admin_label }}"
+                          data-save-url="{{ route('admin.users.label', $user) }}"
+                          title="Double-click to edit user label"
+                          onclick="event.stopPropagation()"
+                        >{{ $user->name }}</span>
                         <span class="user-cell-email">{{ $user->email }}</span>
                       </div>
                     </div>
@@ -927,6 +956,9 @@
                       $referrer = $user->referrer;
                     @endphp
                     {{ $referrer ? ($referrer->name ?: $referrer->email) : ($user->is_admin ? 'Admin account' : 'Missing referrer') }}
+                  </td>
+                  <td>
+                    <span class="user-admin-label" data-user-label-display="{{ $user->id }}">{{ $user->admin_label ?: '—' }}</span>
                   </td>
                   <!-- Available Balance -->
                   <td class="text-nowrap">
@@ -963,7 +995,7 @@
                 </tr>
               @empty
                 <tr>
-                  <td colspan="6" class="empty-state">
+                  <td colspan="7" class="empty-state">
                     <p class="empty-message">No users found. Try adjusting your search filters.</p>
                   </td>
                 </tr>
@@ -977,6 +1009,24 @@
     </div>
   </section>
 </div>
+
+  <div id="userLabelModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="userLabelModalTitle" aria-hidden="true">
+    <div class="modal-card user-label-modal-card">
+      <button class="modal-close" type="button" data-close-user-label aria-label="Close label editor">&times;</button>
+      <h2 class="modal-title" id="userLabelModalTitle">Edit user label</h2>
+      <p class="modal-subtitle" id="userLabelModalUser"></p>
+      <form id="userLabelForm" class="modal-form">
+        <label class="modal-label" for="userLabelInput">Label</label>
+        <input id="userLabelInput" class="modal-input" type="text" maxlength="255" autocomplete="off" placeholder="Enter a label for this user">
+        <p class="modal-help">This label is visible only in admin user management.</p>
+        <p id="userLabelError" class="modal-help" role="alert" hidden></p>
+        <div class="modal-actions">
+          <button id="userLabelSave" type="submit" class="modal-action modal-action-primary">Save</button>
+          <button type="button" class="modal-action modal-action-secondary" data-close-user-label>Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
 @foreach ($users as $user)
   <template id="userModal-{{ $user->id }}">
@@ -1739,6 +1789,91 @@
 <div id="userDetailsModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="userDetailsTitle">
   <div id="userDetailsModalBody" class="modal-card"></div>
 </div>
+
+<script>
+  (function () {
+    var usersPage = document.querySelector('.users-page');
+    var modal = document.getElementById('userLabelModal');
+    var form = document.getElementById('userLabelForm');
+    var input = document.getElementById('userLabelInput');
+    var userName = document.getElementById('userLabelModalUser');
+    var error = document.getElementById('userLabelError');
+    var saveButton = document.getElementById('userLabelSave');
+    var activeEditor = null;
+
+    if (!usersPage || !modal || !form || !input) return;
+
+    function closeModal() {
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      activeEditor = null;
+    }
+
+    usersPage.addEventListener('dblclick', function (event) {
+      var editor = event.target.closest('[data-user-label-editor]');
+      if (!editor) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      activeEditor = editor;
+      input.value = editor.dataset.userLabel || '';
+      userName.textContent = editor.dataset.userName || '';
+      error.hidden = true;
+      error.textContent = '';
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      input.focus();
+      input.select();
+    });
+
+    modal.addEventListener('click', function (event) {
+      if (event.target === modal || event.target.closest('[data-close-user-label]')) closeModal();
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
+    });
+
+    form.addEventListener('submit', async function (event) {
+      event.preventDefault();
+      if (!activeEditor) return;
+
+      saveButton.disabled = true;
+      error.hidden = true;
+      try {
+        var response = await fetch(activeEditor.dataset.saveUrl, {
+          method: 'PUT',
+          credentials: 'same-origin',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+          },
+          body: JSON.stringify({ label: input.value })
+        });
+        var result = await response.json();
+        if (!response.ok) {
+          var validationMessage = result.errors && result.errors.label && result.errors.label[0];
+          throw new Error(validationMessage || result.message || 'Could not save this label.');
+        }
+
+        var label = result.label || '';
+        activeEditor.dataset.userLabel = label;
+        var display = document.querySelector('[data-user-label-display="' + activeEditor.dataset.userId + '"]');
+        if (display) display.textContent = label || '—';
+        closeModal();
+      } catch (saveError) {
+        console.error('Could not save user label.', saveError);
+        error.textContent = saveError.message || 'Could not save this label.';
+        error.hidden = false;
+      } finally {
+        saveButton.disabled = false;
+      }
+    });
+  })();
+</script>
 
 <script>
   function toggleModal(modalId, open) {

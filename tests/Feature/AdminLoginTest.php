@@ -233,6 +233,46 @@ class AdminLoginTest extends TestCase
             ->assertExactJson(['users' => []]);
     }
 
+    public function test_admin_can_save_and_clear_a_user_label(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $user = User::factory()->create();
+
+        $this->actingAs($admin)
+            ->withSession(['investor_pin_verified' => true])
+            ->putJson(route('admin.users.label', $user), ['label' => 'VIP client'])
+            ->assertOk()
+            ->assertExactJson(['label' => 'VIP client']);
+
+        $this->assertSame('VIP client', $user->fresh()->admin_label);
+
+        $this->actingAs($admin)
+            ->withSession(['investor_pin_verified' => true])
+            ->get(route('admin.dashboard'))
+            ->assertOk()
+            ->assertSee('LABEL')
+            ->assertSee('VIP client');
+
+        $this->actingAs($admin)
+            ->withSession(['investor_pin_verified' => true])
+            ->putJson(route('admin.users.label', $user), ['label' => ''])
+            ->assertOk()
+            ->assertExactJson(['label' => null]);
+
+        $this->assertNull($user->fresh()->admin_label);
+    }
+
+    public function test_non_admin_cannot_save_a_user_label(): void
+    {
+        $user = User::factory()->create();
+        $target = User::factory()->create();
+
+        $this->actingAs($user)
+            ->withSession(['investor_pin_verified' => true])
+            ->putJson(route('admin.users.label', $target), ['label' => 'VIP'])
+            ->assertForbidden();
+    }
+
     public function test_non_admin_cannot_get_user_search_suggestions(): void
     {
         $user = User::factory()->create();

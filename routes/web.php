@@ -1288,6 +1288,10 @@ Route::get('/admin/users/{user}', function (User $user) {
     return app(UserManagementController::class)->show($user);
 })->middleware(['auth', RestrictUserAccess::class])->name('admin.users.show');
 
+Route::put('/admin/users/{user}/label', [UserManagementController::class, 'updateLabel'])
+    ->middleware(['auth', RestrictUserAccess::class, RequireInvestorPin::class])
+    ->name('admin.users.label');
+
 Route::delete('/admin/users/{user}/investments/{investment}', [UserManagementController::class, 'destroyInvestment'])
     ->middleware(['auth', RestrictUserAccess::class])
     ->name('admin.users.investments.destroy');

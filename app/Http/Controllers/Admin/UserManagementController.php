@@ -252,6 +252,19 @@ class UserManagementController extends Controller
         ]);
     }
 
+    public function updateLabel(Request $request, User $user): JsonResponse
+    {
+        $validated = $request->validate([
+            'label' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $label = trim((string) ($validated['label'] ?? ''));
+        $user->admin_label = $label !== '' ? $label : null;
+        $user->save();
+
+        return response()->json(['label' => $user->admin_label]);
+    }
+
     public function backup(): JsonResponse
     {
         $backupPayload = [
