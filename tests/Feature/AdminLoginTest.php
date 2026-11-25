@@ -205,7 +205,7 @@ class AdminLoginTest extends TestCase
         ]);
 
         $response = $this->actingAs($admin)
-            ->withSession(['pin_verified' => true])
+            ->withSession(['investor_pin_verified' => true])
             ->get('/admin/dashboard');
 
         $response->assertOk();
